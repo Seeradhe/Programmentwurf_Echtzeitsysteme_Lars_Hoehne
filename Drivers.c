@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Drivers.h"
 
 void toggle_Pin(GPIO_TypeDef *Port, uint8_t Pin){
@@ -20,7 +18,7 @@ void LED_Init(void){
 	// LED Init
 	RCC->AHB1ENR |= 0x8;
 	
-	GPIOD->MODER |= 0x55000000;
+	GPIOD->MODER |= 0x56000000;
 	
-	GPIOD->BSRR |= 0xF000;
+	GPIOD->AFR[1] |= 0x00020000;
 }
