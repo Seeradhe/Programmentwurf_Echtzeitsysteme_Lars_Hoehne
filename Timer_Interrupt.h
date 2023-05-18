@@ -15,10 +15,18 @@ extern uint8_t SleepTimeStatusBit;
 void Timer2_Init(void);
 /*
 *	\brief Init function that sets basic registers for the Timer 3, Timer 3 is used to control the Watchdog Timer
+*
+* \REQ REQ22
+*
+* \Signal S4
 */
 void Timer3_Init(void);
 /*
 *	\brief Init function that sets basic registers for the Timer 4, Timer 4 is used to control the Signal "Soll-Drehzahl"
+*
+* \REQ REQ1
+*
+* \Signal S1
 */
 void Timer4_Init(void);
 /*
@@ -34,6 +42,8 @@ void User_Button_Interrupt_Init(void);
 *				 after a button press of a given length
 *
 * \param msButtonPressLength length of the button press in ms - though the duration is determined by the timer setup
+*
+* \Actuator A1, A2, A3
 */
 void ButtonInputAction(uint32_t msButtonPressLength);
 /*
