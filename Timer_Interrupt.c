@@ -1,21 +1,18 @@
 #include "stm32f407xx.h"
 #include "Drivers.h"
 #include "Timer_Interrupt.h"
+#include "statemachine.h"
 	
 	uint8_t InterruptStatusBit = 0;
 	uint8_t RegelbetriebStatusBit = 0;
 	uint8_t BrennerstartStatusBit = 0;
-	uint8_t SleepTimeStatusBit = 0;
+	uint8_t SleepStatusBit = 0;
 	
 	void Timer2_Init(void){
 		RCC->APB1ENR |= 0x1;
 		
-		TIM2->PSC = 0x3E80;
-		TIM2->ARR = 1000;
-		
-		TIM2->DIER |= 0x1;
-		
-		NVIC_EnableIRQ(TIM2_IRQn);
+		TIM2->PSC = 16000;
+		TIM2->ARR = 0xFFFF;
 	}
 	void Timer3_Init(void){
 		RCC->APB1ENR |= 0x2; // Clock enable
@@ -32,8 +29,8 @@
 	void Timer4_Init(void){
 		RCC->APB1ENR |= 0x4;
 	
-		TIM4->PSC = 0x03E8;		// every increment in the cnt register is 100 us
-		TIM4->ARR = 100;			// 10 ms Period
+		TIM4->PSC = 160;		// every increment in the cnt register is 100 us
+		TIM4->ARR = 1000;			// 10 ms Period
 
 		/*
 			The following 4 lines implement the basic PWM functionality, and determine the PWM mode,
@@ -42,7 +39,7 @@
 			page 610
 		*/
 		TIM4->CCMR1 |= 0x0060;
-		TIM4->CCR1 = 10;
+		TIM4->CCR1 = 0;
 		TIM4->CCER |= 0x0001;
 		TIM4->CR1 |= 0x0080;
 		
@@ -72,11 +69,11 @@
 
 	if(msButtonPressLength> 0 && msButtonPressLength< SHORTBUTTONPRESS){
 		// Leistungsvorgabe + 10%, Overflow von 100% auf 0%
-		if(TIM4->CCR1 == 100){
-			TIM4->CCR1 = 0;
+		if(InterneLeistungsvorgabe == 100){
+			InterneLeistungsvorgabe = 0;
 		}
 		else{
-			TIM4->CCR1 += 10;
+			InterneLeistungsvorgabe += 10;
 		}
 	}
 	else if(msButtonPressLength> SHORTBUTTONPRESS && msButtonPressLength< REGULARBUTTONPRESS){
@@ -99,12 +96,11 @@
 	}
 }
 	
-void sleep_ms(uint32_t msDuration){
-	TIM2->ARR = msDuration;
+void sleep_ms(uint16_t msDuration){
 	TIM2->CR1 |= 0x1;
 	do{
-	}while(SleepTimeStatusBit == 0);
-	SleepTimeStatusBit = 0;
+	}while(TIM2->CNT < msDuration);
+	
 	TIM2->CR1 &= 0xFFFE;
 	TIM2->CNT = 0;
 }
@@ -116,9 +112,6 @@ void sleep_ms(uint32_t msDuration){
 */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
-	void TIM2_IRQHandler(void){
-		SleepTimeStatusBit = 1;
-	}
 	void TIM3_IRQHandler(void){
 		// toggles the Watchdog Signal every 500ms
 		toggle_Pin(GPIOD, 15);
@@ -139,7 +132,7 @@ void sleep_ms(uint32_t msDuration){
 		TIM5->CNT &= 0;
 		InterruptStatusBit = 0;
 	}
-	sleep_ms(500);
+	for(int i = 0; i < 10000; i++);
 	
 	EXTI->PR |= 0x1;
 	NVIC_EnableIRQ(EXTI0_IRQn);

@@ -7,8 +7,7 @@
 extern uint8_t InterruptStatusBit;
 extern uint8_t RegelbetriebStatusBit;
 extern uint8_t BrennerstartStatusBit;
-extern uint8_t SleepTimeStatusBit;
-
+extern uint8_t SleepStatusBit;
 /*
 *	\brief Init function that sets basic registers for the Timer 2, Timer 2 is used to put a function to sleep for a set amount of ms
 */
@@ -49,6 +48,6 @@ void ButtonInputAction(uint32_t msButtonPressLength);
 /*
 *	\brief Function to implement a delay for a given time
 *
-* \param msDuration Duration for the time to sleep in ms
+* \param msDuration Duration for the time to sleep in ms, the maximum lenght is 6553 ms
 */
-void sleep_ms(uint32_t msDuration);
+void sleep_ms(uint16_t msDuration);
