@@ -7,7 +7,12 @@
 extern uint8_t InterruptStatusBit;
 extern uint8_t RegelbetriebStatusBit;
 extern uint8_t BrennerstartStatusBit;
+extern uint8_t SleepTimeStatusBit;
 
+/*
+*	\brief Init function that sets basic registers for the Timer 2, Timer 2 is used to put a function to sleep for a set amount of ms
+*/
+void Timer2_Init(void);
 /*
 *	\brief Init function that sets basic registers for the Timer 3, Timer 3 is used to control the Watchdog Timer
 */
@@ -31,3 +36,9 @@ void User_Button_Interrupt_Init(void);
 * \param msButtonPressLength length of the button press in ms - though the duration is determined by the timer setup
 */
 void ButtonInputAction(uint32_t msButtonPressLength);
+/*
+*	\brief Function to implement a delay for a given time
+*
+* \param msDuration Duration for the time to sleep in ms
+*/
+void sleep_ms(uint32_t msDuration);

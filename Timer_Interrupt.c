@@ -5,7 +5,18 @@
 	uint8_t InterruptStatusBit = 0;
 	uint8_t RegelbetriebStatusBit = 0;
 	uint8_t BrennerstartStatusBit = 0;
+	uint8_t SleepTimeStatusBit = 0;
 	
+	void Timer2_Init(void){
+		RCC->APB1ENR |= 0x1;
+		
+		TIM2->PSC = 0x3E80;
+		TIM2->ARR = 1000;
+		
+		TIM2->DIER |= 0x1;
+		
+		NVIC_EnableIRQ(TIM2_IRQn);
+	}
 	void Timer3_Init(void){
 		RCC->APB1ENR |= 0x2; // Clock enable
 		
@@ -88,6 +99,16 @@
 	}
 }
 	
+void sleep_ms(uint32_t msDuration){
+	TIM2->ARR = msDuration;
+	TIM2->CR1 |= 0x1;
+	do{
+	}while(SleepTimeStatusBit == 0);
+	SleepTimeStatusBit = 0;
+	TIM2->CR1 &= 0xFFFE;
+	TIM2->CNT = 0;
+}
+
 /*
 	Pre-Processor directive removes the warning for the IRQHandlers that exists because of the
 	initial decleration as weak --> warnings are not an issue but a result of the code structure
@@ -95,6 +116,9 @@
 */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
+	void TIM2_IRQHandler(void){
+		SleepTimeStatusBit = 1;
+	}
 	void TIM3_IRQHandler(void){
 		// toggles the Watchdog Signal every 500ms
 		toggle_Pin(GPIOD, 15);
@@ -115,9 +139,10 @@
 		TIM5->CNT &= 0;
 		InterruptStatusBit = 0;
 	}
-	for(int i = 0; i < 50000; i++);
+	sleep_ms(500);
 	
 	EXTI->PR |= 0x1;
 	NVIC_EnableIRQ(EXTI0_IRQn);
 }
+	
 #pragma GCC diagnostic pop
