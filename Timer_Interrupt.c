@@ -15,10 +15,10 @@
 		TIM2->ARR = 0xFFFF;
 	}
 	void Timer3_Init(void){
-		RCC->APB1ENR |= 0x2; // Clock enable
+		RCC->APB1ENR |= 0x2; 	// Clock enable
 		
-		TIM3->PSC = 0x3E80;
-		TIM3->ARR = 500;
+		TIM3->PSC = 0x3E80;		// REQ21
+		TIM3->ARR = 500;			// REQ21
 		
 		TIM3->DIER |= 0x0001;
 		
@@ -30,7 +30,7 @@
 		RCC->APB1ENR |= 0x4;
 	
 		TIM4->PSC = 160;		// every increment in the cnt register is 100 us
-		TIM4->ARR = 1000;			// 10 ms Period
+		TIM4->ARR = 1000;			// 10 ms Period REQ1
 
 		/*
 			The following 4 lines implement the basic PWM functionality, and determine the PWM mode,

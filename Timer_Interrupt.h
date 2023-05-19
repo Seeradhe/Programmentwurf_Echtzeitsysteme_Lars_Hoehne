@@ -15,13 +15,13 @@ void Timer2_Init(void);
 /*
 *	\brief Init function that sets basic registers for the Timer 3, Timer 3 is used to control the Watchdog Timer
 *
-* \REQ REQ22
+* \REQ REQ22 REQ21
 *
 * \Signal S4
 */
 void Timer3_Init(void);
 /*
-*	\brief Init function that sets basic registers for the Timer 4, Timer 4 is used to control the Signal "Soll-Drehzahl"
+*	\brief Init function that sets basic registers for the Timer 4, Timer 4 is used to control the Signal "Soll-Drehzahl" with an accuracy of +/- 100us
 *
 * \REQ REQ1
 *
